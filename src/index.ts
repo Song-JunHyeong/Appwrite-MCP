@@ -14,6 +14,10 @@ import { storageTools, handleStorageTool } from "./tools/storage.js";
 import { functionTools, handleFunctionTool } from "./tools/functions.js";
 import { healthTools, handleHealthTool } from "./tools/health.js";
 import { messagingTools, handleMessagingTool } from "./tools/messaging.js";
+import { teamTools, handleTeamTool } from "./tools/teams.js";
+import { avatarTools, handleAvatarTool } from "./tools/avatars.js";
+import { localeTools, handleLocaleTool } from "./tools/locale.js";
+import { graphqlTools, handleGraphqlTool } from "./tools/graphql.js";
 
 function parseArgs(): AppwriteConfig {
   const args = process.argv.slice(2);
@@ -74,6 +78,10 @@ async function main() {
     ...functionTools,
     ...healthTools,
     ...messagingTools,
+    ...teamTools,
+    ...avatarTools,
+    ...localeTools,
+    ...graphqlTools,
   ];
 
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
@@ -129,6 +137,38 @@ async function main() {
       if (messagingResult !== null) {
         return {
           content: [{ type: "text", text: JSON.stringify(messagingResult, null, 2) }],
+        };
+      }
+
+      // Check team tools
+      const teamResult = await handleTeamTool(name, args || {});
+      if (teamResult !== null) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(teamResult, null, 2) }],
+        };
+      }
+
+      // Check avatar tools
+      const avatarResult = await handleAvatarTool(name, args || {});
+      if (avatarResult !== null) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(avatarResult, null, 2) }],
+        };
+      }
+
+      // Check locale tools
+      const localeResult = await handleLocaleTool(name, args || {});
+      if (localeResult !== null) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(localeResult, null, 2) }],
+        };
+      }
+
+      // Check GraphQL tools
+      const graphqlResult = await handleGraphqlTool(name, args || {});
+      if (graphqlResult !== null) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(graphqlResult, null, 2) }],
         };
       }
 

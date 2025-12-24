@@ -459,6 +459,297 @@ export const databaseTools: Tool[] = [
       required: ["databaseId", "collectionId", "key"],
     },
   },
+
+  // Bulk Document Operations
+  {
+    name: "create_documents",
+    description: "Create multiple documents in a collection at once",
+    inputSchema: {
+      type: "object",
+      properties: {
+        databaseId: { type: "string", description: "Database ID" },
+        collectionId: { type: "string", description: "Collection ID" },
+        documents: { type: "array", items: { type: "object" }, description: "Array of document data objects" },
+      },
+      required: ["databaseId", "collectionId", "documents"],
+    },
+  },
+  {
+    name: "update_documents",
+    description: "Update multiple documents matching a query",
+    inputSchema: {
+      type: "object",
+      properties: {
+        databaseId: { type: "string", description: "Database ID" },
+        collectionId: { type: "string", description: "Collection ID" },
+        data: { type: "object", description: "Data to update in matching documents" },
+        queries: { type: "array", items: { type: "string" }, description: "Query strings to filter documents to update" },
+      },
+      required: ["databaseId", "collectionId", "data"],
+    },
+  },
+  {
+    name: "delete_documents",
+    description: "Delete multiple documents matching a query",
+    inputSchema: {
+      type: "object",
+      properties: {
+        databaseId: { type: "string", description: "Database ID" },
+        collectionId: { type: "string", description: "Collection ID" },
+        queries: { type: "array", items: { type: "string" }, description: "Query strings to filter documents to delete" },
+      },
+      required: ["databaseId", "collectionId", "queries"],
+    },
+  },
+  {
+    name: "upsert_document",
+    description: "Create or update a document (upsert)",
+    inputSchema: {
+      type: "object",
+      properties: {
+        databaseId: { type: "string", description: "Database ID" },
+        collectionId: { type: "string", description: "Collection ID" },
+        documentId: { type: "string", description: "Document ID" },
+        data: { type: "object", description: "Document data" },
+        permissions: { type: "array", items: { type: "string" }, description: "Permissions" },
+      },
+      required: ["databaseId", "collectionId", "documentId", "data"],
+    },
+  },
+
+  // Atomic Operations
+  {
+    name: "increment_document_attribute",
+    description: "Atomically increment a numeric attribute value",
+    inputSchema: {
+      type: "object",
+      properties: {
+        databaseId: { type: "string", description: "Database ID" },
+        collectionId: { type: "string", description: "Collection ID" },
+        documentId: { type: "string", description: "Document ID" },
+        attribute: { type: "string", description: "Attribute key to increment" },
+        value: { type: "number", description: "Value to increment by (can be negative)" },
+      },
+      required: ["databaseId", "collectionId", "documentId", "attribute"],
+    },
+  },
+
+  // GeoJSON Attributes
+  {
+    name: "create_ip_attribute",
+    description: "Create an IP address attribute in a collection",
+    inputSchema: {
+      type: "object",
+      properties: {
+        databaseId: { type: "string", description: "Database ID" },
+        collectionId: { type: "string", description: "Collection ID" },
+        key: { type: "string", description: "Attribute key" },
+        required: { type: "boolean", description: "Is attribute required" },
+        default: { type: "string", description: "Default IP address value" },
+        array: { type: "boolean", description: "Is array attribute" },
+      },
+      required: ["databaseId", "collectionId", "key", "required"],
+    },
+  },
+  {
+    name: "create_point_attribute",
+    description: "Create a GeoJSON Point attribute for storing geographic coordinates [longitude, latitude]",
+    inputSchema: {
+      type: "object",
+      properties: {
+        databaseId: { type: "string", description: "Database ID" },
+        collectionId: { type: "string", description: "Collection ID" },
+        key: { type: "string", description: "Attribute key" },
+        required: { type: "boolean", description: "Is attribute required" },
+        default: { type: "array", items: { type: "number" }, description: "Default value as [longitude, latitude]" },
+        array: { type: "boolean", description: "Is array attribute" },
+      },
+      required: ["databaseId", "collectionId", "key", "required"],
+    },
+  },
+  {
+    name: "create_polygon_attribute",
+    description: "Create a GeoJSON Polygon attribute for storing geographic boundaries",
+    inputSchema: {
+      type: "object",
+      properties: {
+        databaseId: { type: "string", description: "Database ID" },
+        collectionId: { type: "string", description: "Collection ID" },
+        key: { type: "string", description: "Attribute key" },
+        required: { type: "boolean", description: "Is attribute required" },
+        default: { type: "array", description: "Default polygon coordinates as array of [longitude, latitude] arrays" },
+        array: { type: "boolean", description: "Is array attribute" },
+      },
+      required: ["databaseId", "collectionId", "key", "required"],
+    },
+  },
+
+  // Attribute Updates
+  {
+    name: "update_string_attribute",
+    description: "Update a string attribute",
+    inputSchema: {
+      type: "object",
+      properties: {
+        databaseId: { type: "string", description: "Database ID" },
+        collectionId: { type: "string", description: "Collection ID" },
+        key: { type: "string", description: "Attribute key" },
+        required: { type: "boolean", description: "Is attribute required" },
+        default: { type: "string", description: "Default value" },
+        size: { type: "integer", description: "Maximum string length" },
+        newKey: { type: "string", description: "New attribute key (rename)" },
+      },
+      required: ["databaseId", "collectionId", "key", "required", "default"],
+    },
+  },
+  {
+    name: "update_integer_attribute",
+    description: "Update an integer attribute",
+    inputSchema: {
+      type: "object",
+      properties: {
+        databaseId: { type: "string", description: "Database ID" },
+        collectionId: { type: "string", description: "Collection ID" },
+        key: { type: "string", description: "Attribute key" },
+        required: { type: "boolean", description: "Is attribute required" },
+        min: { type: "integer", description: "Minimum value" },
+        max: { type: "integer", description: "Maximum value" },
+        default: { type: "integer", description: "Default value" },
+        newKey: { type: "string", description: "New attribute key (rename)" },
+      },
+      required: ["databaseId", "collectionId", "key", "required", "default"],
+    },
+  },
+  {
+    name: "update_float_attribute",
+    description: "Update a float attribute",
+    inputSchema: {
+      type: "object",
+      properties: {
+        databaseId: { type: "string", description: "Database ID" },
+        collectionId: { type: "string", description: "Collection ID" },
+        key: { type: "string", description: "Attribute key" },
+        required: { type: "boolean", description: "Is attribute required" },
+        min: { type: "number", description: "Minimum value" },
+        max: { type: "number", description: "Maximum value" },
+        default: { type: "number", description: "Default value" },
+        newKey: { type: "string", description: "New attribute key (rename)" },
+      },
+      required: ["databaseId", "collectionId", "key", "required", "default"],
+    },
+  },
+  {
+    name: "update_boolean_attribute",
+    description: "Update a boolean attribute",
+    inputSchema: {
+      type: "object",
+      properties: {
+        databaseId: { type: "string", description: "Database ID" },
+        collectionId: { type: "string", description: "Collection ID" },
+        key: { type: "string", description: "Attribute key" },
+        required: { type: "boolean", description: "Is attribute required" },
+        default: { type: "boolean", description: "Default value" },
+        newKey: { type: "string", description: "New attribute key (rename)" },
+      },
+      required: ["databaseId", "collectionId", "key", "required", "default"],
+    },
+  },
+  {
+    name: "update_email_attribute",
+    description: "Update an email attribute",
+    inputSchema: {
+      type: "object",
+      properties: {
+        databaseId: { type: "string", description: "Database ID" },
+        collectionId: { type: "string", description: "Collection ID" },
+        key: { type: "string", description: "Attribute key" },
+        required: { type: "boolean", description: "Is attribute required" },
+        default: { type: "string", description: "Default value" },
+        newKey: { type: "string", description: "New attribute key (rename)" },
+      },
+      required: ["databaseId", "collectionId", "key", "required", "default"],
+    },
+  },
+  {
+    name: "update_enum_attribute",
+    description: "Update an enum attribute",
+    inputSchema: {
+      type: "object",
+      properties: {
+        databaseId: { type: "string", description: "Database ID" },
+        collectionId: { type: "string", description: "Collection ID" },
+        key: { type: "string", description: "Attribute key" },
+        elements: { type: "array", items: { type: "string" }, description: "Allowed enum values" },
+        required: { type: "boolean", description: "Is attribute required" },
+        default: { type: "string", description: "Default value" },
+        newKey: { type: "string", description: "New attribute key (rename)" },
+      },
+      required: ["databaseId", "collectionId", "key", "elements", "required", "default"],
+    },
+  },
+  {
+    name: "update_datetime_attribute",
+    description: "Update a datetime attribute",
+    inputSchema: {
+      type: "object",
+      properties: {
+        databaseId: { type: "string", description: "Database ID" },
+        collectionId: { type: "string", description: "Collection ID" },
+        key: { type: "string", description: "Attribute key" },
+        required: { type: "boolean", description: "Is attribute required" },
+        default: { type: "string", description: "Default value in ISO 8601 format" },
+        newKey: { type: "string", description: "New attribute key (rename)" },
+      },
+      required: ["databaseId", "collectionId", "key", "required", "default"],
+    },
+  },
+  {
+    name: "update_url_attribute",
+    description: "Update a URL attribute",
+    inputSchema: {
+      type: "object",
+      properties: {
+        databaseId: { type: "string", description: "Database ID" },
+        collectionId: { type: "string", description: "Collection ID" },
+        key: { type: "string", description: "Attribute key" },
+        required: { type: "boolean", description: "Is attribute required" },
+        default: { type: "string", description: "Default value" },
+        newKey: { type: "string", description: "New attribute key (rename)" },
+      },
+      required: ["databaseId", "collectionId", "key", "required", "default"],
+    },
+  },
+  {
+    name: "update_ip_attribute",
+    description: "Update an IP address attribute",
+    inputSchema: {
+      type: "object",
+      properties: {
+        databaseId: { type: "string", description: "Database ID" },
+        collectionId: { type: "string", description: "Collection ID" },
+        key: { type: "string", description: "Attribute key" },
+        required: { type: "boolean", description: "Is attribute required" },
+        default: { type: "string", description: "Default value" },
+        newKey: { type: "string", description: "New attribute key (rename)" },
+      },
+      required: ["databaseId", "collectionId", "key", "required", "default"],
+    },
+  },
+  {
+    name: "update_relationship_attribute",
+    description: "Update a relationship attribute",
+    inputSchema: {
+      type: "object",
+      properties: {
+        databaseId: { type: "string", description: "Database ID" },
+        collectionId: { type: "string", description: "Collection ID" },
+        key: { type: "string", description: "Attribute key" },
+        onDelete: { type: "string", enum: ["cascade", "restrict", "setNull"], description: "On delete behavior" },
+        newKey: { type: "string", description: "New attribute key (rename)" },
+      },
+      required: ["databaseId", "collectionId", "key"],
+    },
+  },
 ];
 
 export async function handleDatabaseTool(
@@ -744,7 +1035,267 @@ export async function handleDatabaseTool(
       );
     }
 
+    // Bulk Document Operations
+    case "create_documents": {
+      const documents = args.documents as Record<string, unknown>[];
+      const results = [];
+      for (const doc of documents) {
+        const result = await databases.createDocument(
+          args.databaseId as string,
+          args.collectionId as string,
+          ID.unique(),
+          doc
+        );
+        results.push(result);
+      }
+      return { success: true, created: results.length, documents: results };
+    }
+    case "update_documents": {
+      const docs = await databases.listDocuments(
+        args.databaseId as string,
+        args.collectionId as string,
+        args.queries as string[] | undefined
+      );
+      const results = [];
+      for (const doc of docs.documents) {
+        const result = await databases.updateDocument(
+          args.databaseId as string,
+          args.collectionId as string,
+          doc.$id,
+          args.data as Record<string, unknown>
+        );
+        results.push(result);
+      }
+      return { success: true, updated: results.length };
+    }
+    case "delete_documents": {
+      const docs = await databases.listDocuments(
+        args.databaseId as string,
+        args.collectionId as string,
+        args.queries as string[]
+      );
+      for (const doc of docs.documents) {
+        await databases.deleteDocument(
+          args.databaseId as string,
+          args.collectionId as string,
+          doc.$id
+        );
+      }
+      return { success: true, deleted: docs.documents.length };
+    }
+    case "upsert_document": {
+      try {
+        const existing = await databases.getDocument(
+          args.databaseId as string,
+          args.collectionId as string,
+          args.documentId as string
+        );
+        return await databases.updateDocument(
+          args.databaseId as string,
+          args.collectionId as string,
+          args.documentId as string,
+          args.data as Record<string, unknown>,
+          args.permissions as string[] | undefined
+        );
+      } catch {
+        return await databases.createDocument(
+          args.databaseId as string,
+          args.collectionId as string,
+          args.documentId as string,
+          args.data as Record<string, unknown>,
+          args.permissions as string[] | undefined
+        );
+      }
+    }
+
+    // Atomic Operations
+    case "increment_document_attribute": {
+      const doc = await databases.getDocument(
+        args.databaseId as string,
+        args.collectionId as string,
+        args.documentId as string
+      );
+      const currentValue = (doc as Record<string, unknown>)[args.attribute as string] as number || 0;
+      const incrementBy = (args.value as number) || 1;
+      return await databases.updateDocument(
+        args.databaseId as string,
+        args.collectionId as string,
+        args.documentId as string,
+        { [args.attribute as string]: currentValue + incrementBy }
+      );
+    }
+
+    // GeoJSON Attributes
+    case "create_ip_attribute": {
+      return await databases.createIpAttribute(
+        args.databaseId as string,
+        args.collectionId as string,
+        args.key as string,
+        args.required as boolean,
+        args.default as string | undefined,
+        args.array as boolean | undefined
+      );
+    }
+    case "create_point_attribute": {
+      const config = await import("../appwrite-client.js").then(m => m.getConfig());
+      const response = await fetch(
+        `${config.endpoint}/databases/${args.databaseId}/collections/${args.collectionId}/attributes/point`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Appwrite-Project": config.projectId,
+            "X-Appwrite-Key": config.apiKey,
+          },
+          body: JSON.stringify({
+            key: args.key,
+            required: args.required,
+            default: args.default,
+            array: args.array,
+          }),
+        }
+      );
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`Failed to create point attribute: ${error}`);
+      }
+      return await response.json();
+    }
+    case "create_polygon_attribute": {
+      const config = await import("../appwrite-client.js").then(m => m.getConfig());
+      const response = await fetch(
+        `${config.endpoint}/databases/${args.databaseId}/collections/${args.collectionId}/attributes/polygon`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Appwrite-Project": config.projectId,
+            "X-Appwrite-Key": config.apiKey,
+          },
+          body: JSON.stringify({
+            key: args.key,
+            required: args.required,
+            default: args.default,
+            array: args.array,
+          }),
+        }
+      );
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`Failed to create polygon attribute: ${error}`);
+      }
+      return await response.json();
+    }
+
+    // Attribute Updates
+    case "update_string_attribute": {
+      return await databases.updateStringAttribute(
+        args.databaseId as string,
+        args.collectionId as string,
+        args.key as string,
+        args.required as boolean,
+        args.default as string,
+        args.size as number | undefined,
+        args.newKey as string | undefined
+      );
+    }
+    case "update_integer_attribute": {
+      return await databases.updateIntegerAttribute(
+        args.databaseId as string,
+        args.collectionId as string,
+        args.key as string,
+        args.required as boolean,
+        args.default as number,
+        args.min as number ?? Number.MIN_SAFE_INTEGER,
+        args.max as number ?? Number.MAX_SAFE_INTEGER,
+        args.newKey as string | undefined
+      );
+    }
+    case "update_float_attribute": {
+      return await databases.updateFloatAttribute(
+        args.databaseId as string,
+        args.collectionId as string,
+        args.key as string,
+        args.required as boolean,
+        args.default as number,
+        args.min as number ?? Number.MIN_VALUE,
+        args.max as number ?? Number.MAX_VALUE,
+        args.newKey as string | undefined
+      );
+    }
+    case "update_boolean_attribute": {
+      return await databases.updateBooleanAttribute(
+        args.databaseId as string,
+        args.collectionId as string,
+        args.key as string,
+        args.required as boolean,
+        args.default as boolean,
+        args.newKey as string | undefined
+      );
+    }
+    case "update_email_attribute": {
+      return await databases.updateEmailAttribute(
+        args.databaseId as string,
+        args.collectionId as string,
+        args.key as string,
+        args.required as boolean,
+        args.default as string,
+        args.newKey as string | undefined
+      );
+    }
+    case "update_enum_attribute": {
+      return await databases.updateEnumAttribute(
+        args.databaseId as string,
+        args.collectionId as string,
+        args.key as string,
+        args.elements as string[],
+        args.required as boolean,
+        args.default as string,
+        args.newKey as string | undefined
+      );
+    }
+    case "update_datetime_attribute": {
+      return await databases.updateDatetimeAttribute(
+        args.databaseId as string,
+        args.collectionId as string,
+        args.key as string,
+        args.required as boolean,
+        args.default as string,
+        args.newKey as string | undefined
+      );
+    }
+    case "update_url_attribute": {
+      return await databases.updateUrlAttribute(
+        args.databaseId as string,
+        args.collectionId as string,
+        args.key as string,
+        args.required as boolean,
+        args.default as string,
+        args.newKey as string | undefined
+      );
+    }
+    case "update_ip_attribute": {
+      return await databases.updateIpAttribute(
+        args.databaseId as string,
+        args.collectionId as string,
+        args.key as string,
+        args.required as boolean,
+        args.default as string,
+        args.newKey as string | undefined
+      );
+    }
+    case "update_relationship_attribute": {
+      return await databases.updateRelationshipAttribute(
+        args.databaseId as string,
+        args.collectionId as string,
+        args.key as string,
+        args.onDelete as RelationMutate | undefined,
+        args.newKey as string | undefined
+      );
+    }
+
     default:
       return null;
   }
 }
+

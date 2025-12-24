@@ -202,6 +202,72 @@ export const functionTools: Tool[] = [
     },
   },
 
+  // Deployment Management
+  {
+    name: "create_deployment",
+    description: "Create a new function deployment (upload code). Provide code as base64-encoded tar.gz file.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        functionId: { type: "string", description: "Function ID" },
+        code: { type: "string", description: "Base64-encoded tar.gz file containing function code" },
+        activate: { type: "boolean", description: "Activate deployment after creation" },
+        entrypoint: { type: "string", description: "Entrypoint file (e.g., 'index.js')" },
+        commands: { type: "string", description: "Build commands" },
+      },
+      required: ["functionId", "code", "activate"],
+    },
+  },
+  {
+    name: "get_deployment",
+    description: "Get deployment by ID",
+    inputSchema: {
+      type: "object",
+      properties: {
+        functionId: { type: "string", description: "Function ID" },
+        deploymentId: { type: "string", description: "Deployment ID" },
+      },
+      required: ["functionId", "deploymentId"],
+    },
+  },
+  {
+    name: "list_deployments",
+    description: "List all deployments for a function",
+    inputSchema: {
+      type: "object",
+      properties: {
+        functionId: { type: "string", description: "Function ID" },
+        queries: { type: "array", items: { type: "string" }, description: "Query strings for filtering" },
+        search: { type: "string", description: "Search term" },
+      },
+      required: ["functionId"],
+    },
+  },
+  {
+    name: "update_deployment",
+    description: "Update function deployment (activate a specific deployment)",
+    inputSchema: {
+      type: "object",
+      properties: {
+        functionId: { type: "string", description: "Function ID" },
+        deploymentId: { type: "string", description: "Deployment ID to activate" },
+      },
+      required: ["functionId", "deploymentId"],
+    },
+  },
+  {
+    name: "delete_deployment",
+    description: "Delete deployment by ID",
+    inputSchema: {
+      type: "object",
+      properties: {
+        functionId: { type: "string", description: "Function ID" },
+        deploymentId: { type: "string", description: "Deployment ID" },
+      },
+      required: ["functionId", "deploymentId"],
+    },
+  },
+
   // Utility
   {
     name: "list_runtimes",
@@ -332,6 +398,46 @@ export async function handleFunctionTool(
         args.variableId as string
       );
       return { success: true, message: `Variable ${args.variableId} deleted` };
+    }
+
+    // Deployment Management
+    case "create_deployment": {
+      const codeBuffer = Buffer.from(args.code as string, 'base64');
+      const { InputFile } = await import('node-appwrite/file');
+      const file = InputFile.fromBuffer(codeBuffer, 'code.tar.gz');
+      return await functions.createDeployment(
+        args.functionId as string,
+        file,
+        args.activate as boolean,
+        args.entrypoint as string | undefined,
+        args.commands as string | undefined
+      );
+    }
+    case "get_deployment": {
+      return await functions.getDeployment(
+        args.functionId as string,
+        args.deploymentId as string
+      );
+    }
+    case "list_deployments": {
+      return await functions.listDeployments(
+        args.functionId as string,
+        args.queries as string[] | undefined,
+        args.search as string | undefined
+      );
+    }
+    case "update_deployment": {
+      return await functions.updateDeployment(
+        args.functionId as string,
+        args.deploymentId as string
+      );
+    }
+    case "delete_deployment": {
+      await functions.deleteDeployment(
+        args.functionId as string,
+        args.deploymentId as string
+      );
+      return { success: true, message: `Deployment ${args.deploymentId} deleted` };
     }
 
     // Utility

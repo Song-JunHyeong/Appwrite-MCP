@@ -1,6 +1,6 @@
 {
   "name": "@jun-b/appwrite-mcp",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "MCP server for Appwrite - AI-powered backend automation",
   "type": "module",
   "main": "dist/index.js",
@@ -13,18 +13,11 @@
     "start": "node dist/index.js",
     "inspector": "npx @modelcontextprotocol/inspector node dist/index.js"
   },
-  "keywords": [
-    "mcp",
-    "appwrite",
-    "ai",
-    "automation",
-    "backend"
-  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
-    "node-appwrite": "^14.0.0",
+    "node-appwrite": "latest",
     "zod": "^3.23.0"
   },
   "devDependencies": {
